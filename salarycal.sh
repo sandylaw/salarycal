@@ -60,6 +60,9 @@ function cal_workday(){
     start_day_year=$(echo "$start_day" | awk -F "-" '{print $1}')
     start_day_month=$(echo "$start_day" | awk -F "-" '{print $2}')
     start_day_day=$(echo "$start_day" | awk -F "-" '{print $3}')
+    if [[ $(echo $start_day_day |cut -b -1) == 0 ]] ;then
+	 start_day_day=$(echo $start_day_day |cut -b 2)
+    fi
 
     start_month_workday=$(ncal "$start_day_month" "$start_day_year" -h | grep -vE "^ |^$" | sed "s/[[:alpha:]]//g" | head -n -2 | fmt -w 1 | sort -n)
 
@@ -78,7 +81,7 @@ function cal_workday(){
     stop_day_day=$(echo "$stop_day" | awk -F "-" '{print $3}')
     stop_month_workday=$(ncal "$stop_day_month" "$stop_day_year" -h | grep -vE "^ |^$" | sed "s/[[:alpha:]]//g" | head -n -2 | fmt -w 1 | sort -n)
 
-    interval_month=$((stop_day_month-start_day_month))
+    interval_month=$((10#$stop_day_month-10#$start_day_month))
     if [ "$interval_month" == 0 ];then
         result_work_day_num=$(($(echo $stop_month_workday|tr " " "\n"|sed '/^[ ]*'"$start_day_day"'/,$!d'|sed '/^[ ]*'"$stop_day_day"'/,$d'|wc -l)+1))
 
